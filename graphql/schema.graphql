@@ -4,23 +4,51 @@ scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date
 "A date string with format `Y-m-d`, e.g. `2011-05-23`."
 scalar Date @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date")
 
-type Query {
-    users: [User!]! @paginate(type: "paginator" model: "App\\User")
-    user(id: ID @eq): User @find(model: "App\\User")
-    article(id: ID @eq): Article @find(model: "App\\Article")
-}
+# type Query {
+#     users: [User!]! @paginate(type: "paginator" model: "App\\User")
+#     user(id: ID @eq): User @find(model: "App\\User")
+#     article(id: ID @eq): Article @find(model: "App\\Article")
+# }
 
-type User {
-    id: ID!
-    name: String!
-    email: String!
-    created_at: DateTime!
-    updated_at: DateTime!
+# type User {
+#     id: ID!
+#     name: String!
+#     email: String!
+#     created_at: DateTime!
+#     updated_at: DateTime!
     
+#   articles: [Article!]! @hasMany
+# }
+type User {
+  id: ID!
+  name: String!
+  email: String!
   articles: [Article!]! @hasMany
 }
+
 type Article {
   id: ID!
   title: String!
   content: String!
+}
+type Query {
+  user(id: ID! @eq): User @find
+  # users: [User!]! @all
+  users: [User!]! @paginate
+}
+
+type UserPaginator {
+  paginatorInfo: PaginatorInfo!
+  data: [User!]!
+}
+
+type PaginatorInfo {
+  count: Int!
+  currentPage: Int!
+  firstItem: Int
+  hasMorePages: Boolean!
+  lastItem: Int
+  lastPage: Int!
+  perPage: Int!
+  total: Int!
 }
