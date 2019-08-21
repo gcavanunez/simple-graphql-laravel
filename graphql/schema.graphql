@@ -30,11 +30,18 @@ type Article {
   id: ID!
   title: String!
   content: String!
+  author: User! @belongsTo(relation: "user")
 }
 type Query {
   user(id: ID! @eq): User @find
   # users: [User!]! @all
   users: [User!]! @paginate
+  
+  article(id: ID! @eq): Article @find
+  articles: [Article!]! @paginate
+
+  
+  me: User @auth(guard: "api")
 }
 
 type UserPaginator {
@@ -51,4 +58,21 @@ type PaginatorInfo {
   lastPage: Int!
   perPage: Int!
   total: Int!
+}
+
+type Mutation {
+  createUser(
+    name: String!
+    email: String! @rules(apply: ["email", "unique:users"])
+    password: String! @bcrypt @rules(apply: ["min:6"])
+  ): User @create
+  
+  login(
+    email: String! 
+    password: String!
+  ): String @field(resolver: "AuthMutator@resolve")
+
+  createArticle(title: String!, content: String!): Article 
+    @field(resolver: "ArticleMutator@create")
+    @middleware(checks: ["auth:api"])
 }
